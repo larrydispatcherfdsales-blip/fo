@@ -1,0 +1,28 @@
+name: Train Custom TTS Model (Docker)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+    # Step 1: Repository ka code (audio file, script) download karna
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Step 2: Docker ke andar training chalana (THE CORRECT WAY)
+    - name: Run Training in Docker Container
+      run: |
+        # --entrypoint "/bin/bash": Iska matlab hai ke Docker container ke andar default 'tts' command ke bajaye 'bash' shell shuru karo.
+        # -c "python /root/training/train_tts.py": Yeh 'bash' shell ko hukum deta hai ke woh hamari Python script chalaye.
+        docker run --rm -v $(pwd):/root/training --entrypoint "/bin/bash" ghcr.io/coqui-ai/tts:latest -c "python /root/training/train_tts.py"
+
+    # Step 3: Trained model ko Artifacts mein upload karna
+    - name: Upload Trained Model
+      uses: actions/upload-artifact@v4
+      with:
+        name: trained-tts-model
+        path: trained_model_output/
