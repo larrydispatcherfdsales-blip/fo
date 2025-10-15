@@ -1,4 +1,4 @@
-name: Train Custom TTS Model (Docker)
+name: Train Custom TTS Model (Final Attempt)
 
 on:
   workflow_dispatch:
@@ -9,18 +9,25 @@ jobs:
     timeout-minutes: 360
 
     steps:
-    # Step 1: Repository ka code (audio file, script) download karna
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Step 2: Docker ke andar training chalana (THE CORRECT WAY)
-    - name: Run Training in Docker Container
-      run: |
-        # --entrypoint "/bin/bash": Docker container ke andar 'bash' shell shuru karo.
-        # -c "python3 ...": 'bash' shell ko hukum do ke woh 'python3' ka istemal karke script chalaye.
-        docker run --rm -v $(pwd):/root/training --entrypoint "/bin/bash" ghcr.io/coqui-ai/tts:latest -c "python3 /root/training/train_tts.py"
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-    # Step 3: Trained model ko Artifacts mein upload karna
+    - name: Install System Dependencies
+      run: sudo apt-get update && sudo apt-get install -y espeak-ng ffmpeg
+
+    - name: Install Exact Python Dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run Training Script
+      env:
+        COQUI_TOS_AGREED: 1
+      run: python train_tts.py
+
     - name: Upload Trained Model
       uses: actions/upload-artifact@v4
       with:
