@@ -16,9 +16,9 @@ jobs:
     # Step 2: Docker ke andar training chalana (THE CORRECT WAY)
     - name: Run Training in Docker Container
       run: |
-        # --entrypoint "/bin/bash": Iska matlab hai ke Docker container ke andar default 'tts' command ke bajaye 'bash' shell shuru karo.
-        # -c "python /root/training/train_tts.py": Yeh 'bash' shell ko hukum deta hai ke woh hamari Python script chalaye.
-        docker run --rm -v $(pwd):/root/training --entrypoint "/bin/bash" ghcr.io/coqui-ai/tts:latest -c "python /root/training/train_tts.py"
+        # --entrypoint "/bin/bash": Docker container ke andar 'bash' shell shuru karo.
+        # -c "python3 ...": 'bash' shell ko hukum do ke woh 'python3' ka istemal karke script chalaye.
+        docker run --rm -v $(pwd):/root/training --entrypoint "/bin/bash" ghcr.io/coqui-ai/tts:latest -c "python3 /root/training/train_tts.py"
 
     # Step 3: Trained model ko Artifacts mein upload karna
     - name: Upload Trained Model
